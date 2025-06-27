@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  evilginx:
+    build: ./evilginx
+    container_name: evilginx
+    ports:
+      - "8080:80"
+      - "8443:443"
+      - "8444:8443"
+    volumes:
+      - ./evilginx/crt:/root/.evilginx/crt
+      - ./evilginx/phishlets:/app/phishlets:ro
+      - ./certs/rootCA.pem:/usr/local/share/ca-certificates/mkcert-ca.crt:ro
+    environment:
+      EVILGINX_API_TOKEN: dev_token_replace_in_production
+    entrypoint: ["/bin/sh", "-c", "chmod 600 /root/.evilginx/crt/sites/*/*.key && python3 /app/api_wrapper.py"]
+    cap_add: ["NET_ADMIN"]
+
